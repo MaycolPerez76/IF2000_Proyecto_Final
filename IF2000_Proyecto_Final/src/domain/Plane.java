@@ -56,5 +56,26 @@ public class Plane {
 
     public int getEconomyOccupied() {
         return economyOccupied;
+  
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public void setBusinessCapacity(int businessCapacity) {
+        this.businessCapacity = businessCapacity;
+    }
+
+    public void setEconomyCapacity(int economyCapacity) {
+        this.economyCapacity = economyCapacity;
+    }
+
+    public void setBusinessOccupied(int businessOccupied) {
+        this.businessOccupied = businessOccupied;
+    }
+
+    public void setEconomyOccupied(int economyOccupied) {
+        this.economyOccupied = economyOccupied;
     }
 }
