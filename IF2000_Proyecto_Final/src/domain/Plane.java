@@ -19,9 +19,9 @@ public class Plane {
 
     // Checks availability based on class
     public boolean hasAvailability(String seatClass) {
-        if (seatClass.equalsIgnoreCase("business")) {
+        if (seatClass.equals("business")) {
             return businessOccupied < businessCapacity;
-        } else if (seatClass.equalsIgnoreCase("economy")) {
+        } else if (seatClass.equals("economy")) {
             return economyOccupied < economyCapacity;
         } else {
             return false; // invalid class
