@@ -4,19 +4,20 @@
  */
 package logic;
 
+import domain.Invoice;
+
 /**
  *
  * @author mayco
  */
 public class CalculateAmount {
-    Invoice inv = new Invoice();
     
-    private void calculateAmount() {
-        if (inv.getTicket != null) {
-            if (inv.getClass().toString().equals("Business")) {
-                amount = 350.00;
+    private void calculateAmount(Invoice inv) {
+        if (inv.getTicket() != null) {
+            if (inv.getClass().toString().equalsIgnoreCase("Business")) {
+                inv.setAmount(350.00);
             } else {
-                amount = 183.00;
+                inv.setAmount(183.00);
             }
         }
     }
