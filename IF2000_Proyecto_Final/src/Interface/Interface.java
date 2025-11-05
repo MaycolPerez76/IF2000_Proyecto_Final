@@ -1,131 +1,112 @@
 package Interface;
 
-import domain.Flight;
-import domain.Plane;
-import logic.FlightAvailability;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class Interface extends JFrame {
-
-    private JTextField originField;
-    private JTextField destinationField;
-    private JComboBox<String> classCombo;
-    private JTextArea outputArea;
-    private JButton checkButton;
-    private JButton reserveButton;
-
-    private Plane plane;
-    private Flight flight;
-    private FlightAvailability flightAvailability;
+public class Interface extends JPanel {
+    
+    private JComboBox<String> originCombo, destinationCombo, classCombo;
+    private JTextField nameField, idField;
+    private JTextArea ticketArea, invoiceArea;
 
     public Interface() {
-        // Crear objetos principales
-        plane = new Plane("Boeing 737");
-        flight = new Flight("Sin origen", "Sin destino", plane);
-        flightAvailability = new FlightAvailability();
-
         initComponents();
     }
 
     private void initComponents() {
-        setTitle("Compra de Boletos de Avión");
-        setSize(450, 350);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Panel superior
-        JPanel topPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Form panel (left) - GridLayout for alignment
+        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createTitledBorder("Reservation Details"));
+        
+        // Origin - MANTENIDO
+        formPanel.add(new JLabel("Origin:"));
+        originCombo = new JComboBox<>(new String[]{"San Jose", "Liberia","Limon"});
+        formPanel.add(originCombo);
 
-        topPanel.add(new JLabel("Origen:"));
-        originField = new JTextField();
-        topPanel.add(originField);
+        // Destination - MANTENIDO
+        formPanel.add(new JLabel("Destination:"));
+        destinationCombo = new JComboBox<>(new String[]{"San Jose", "Liberia","Mexico","Nicaragua","Colombia"});
+        formPanel.add(destinationCombo);
 
-        topPanel.add(new JLabel("Destino:"));
-        destinationField = new JTextField();
-        topPanel.add(destinationField);
-
-        topPanel.add(new JLabel("Clase:"));
+        // Class - MANTENIDO
+        formPanel.add(new JLabel("Class:"));
         classCombo = new JComboBox<>(new String[]{"Business", "Economy"});
-        topPanel.add(classCombo);
+        formPanel.add(classCombo);
 
-        add(topPanel, BorderLayout.NORTH);
+        // Full name - Empty field - MANTENIDO
+        formPanel.add(new JLabel("Full Name:"));
+        nameField = new JTextField();
+        formPanel.add(nameField);
 
-        // Área de resultados
-        outputArea = new JTextArea();
-        outputArea.setEditable(false);
-        add(new JScrollPane(outputArea), BorderLayout.CENTER);
+        // Identification - MANTENIDO
+        formPanel.add(new JLabel("ID:"));
+        idField = new JTextField();
+        formPanel.add(idField);
 
-        // Panel de botones
-        JPanel bottomPanel = new JPanel();
-        checkButton = new JButton("Verificar Disponibilidad");
-        reserveButton = new JButton("Reservar Asiento");
+        // Results panel (center)
+        JPanel resultsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        
+        // Ticket
+        JPanel ticketPanel = new JPanel(new BorderLayout());
+        ticketPanel.setBorder(BorderFactory.createTitledBorder("Ticket"));
+        ticketArea = new JTextArea(8, 20);
+        ticketArea.setEditable(false);
+        ticketArea.setText("Ticket will appear here...");
+        JScrollPane ticketScroll = new JScrollPane(ticketArea);
+        ticketPanel.add(ticketScroll, BorderLayout.CENTER);
 
-        bottomPanel.add(checkButton);
-        bottomPanel.add(reserveButton);
-        add(bottomPanel, BorderLayout.SOUTH);
+        // Invoice
+        JPanel invoicePanel = new JPanel(new BorderLayout());
+        invoicePanel.setBorder(BorderFactory.createTitledBorder("Invoice"));
+        invoiceArea = new JTextArea(8, 20);
+        invoiceArea.setEditable(false);
+        invoiceArea.setText("Invoice will appear here...");
+        JScrollPane invoiceScroll = new JScrollPane(invoiceArea);
+        invoicePanel.add(invoiceScroll, BorderLayout.CENTER);
 
-        // Eventos
-        checkButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                checkAvailability();
-            }
+        resultsPanel.add(ticketPanel);
+        resultsPanel.add(invoicePanel);
+
+        // Button panel (south)
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        
+        JButton checkButton = new JButton("Check Availability");
+        checkButton.addActionListener((ActionEvent e) -> {
+            // FUNCIÓN: Debe verificar disponibilidad de asientos
+            // Business: $275.00 | Economy: $201.30
+            ticketArea.setText("Check Availability - Función por implementar");
         });
-
-        reserveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reserveSeat();
-            }
+        
+        JButton generateButton = new JButton("Generate Ticket and Invoice");
+        generateButton.addActionListener((ActionEvent e) -> {
+            // FUNCIÓN: Debe generar ticket y factura
+            // Validar campos y calcular montos
+            ticketArea.setText("Generate Ticket - Función por implementar");
+            invoiceArea.setText("Invoice - Función por implementar");
         });
-    }
+        
+        JButton seatsButton = new JButton("View Available Seats");
+        seatsButton.addActionListener((ActionEvent e) -> {
+            // FUNCIÓN: Mostrar estado de asientos disponibles
+            ticketArea.setText("View Seats - Función por implementar");
+        });
+        
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(e -> System.exit(0));
+        
+        buttonPanel.add(checkButton);
+        buttonPanel.add(generateButton);
+        buttonPanel.add(seatsButton);
+        buttonPanel.add(exitButton);
 
-    private void checkAvailability() {
-        String origin = originField.getText().trim();
-        String destination = destinationField.getText().trim();
-        String seatClass = (String) classCombo.getSelectedItem();
-
-        if (origin.isEmpty() || destination.isEmpty()) {
-            outputArea.setText("Por favor, ingrese el origen y el destino del vuelo.");
-            return;
-        }
-
-        // Actualizar vuelo
-        flight = new Flight(origin, destination, plane);
-
-        boolean available = flightAvailability.checkAvailability(plane, seatClass);
-        if (available) {
-            outputArea.setText("✅ Hay disponibilidad en " + seatClass +
-                    " para el vuelo " + origin + " → " + destination + ".");
-        } else {
-            outputArea.setText("❌ No hay asientos disponibles en " + seatClass + ".");
-        }
-    }
-
-    private void reserveSeat() {
-        String origin = originField.getText().trim();
-        String destination = destinationField.getText().trim();
-        String seatClass = (String) classCombo.getSelectedItem();
-
-        if (origin.isEmpty() || destination.isEmpty()) {
-            outputArea.setText("Debe ingresar origen y destino antes de reservar.");
-            return;
-        }
-
-        flight = new Flight(origin, destination, plane);
-        boolean available = flightAvailability.checkAvailability(plane, seatClass);
-
-        if (available) {
-            flightAvailability.reserveSeat(plane, seatClass);
-            outputArea.setText("🎟️ Reserva exitosa en " + seatClass +
-                    " para el vuelo " + origin + " → " + destination + ".");
-        } else {
-            outputArea.setText("❌ No se pudo realizar la reserva. No hay asientos disponibles.");
-        }
+        // Add all panels
+        add(formPanel, BorderLayout.NORTH);
+        add(resultsPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 }
