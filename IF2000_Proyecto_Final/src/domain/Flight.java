@@ -35,16 +35,14 @@ public class Flight {
     private void validateLocations(String origin, String destination){
         if (origin == null || origin.isBlank())
             throw new IllegalArgumentException("Empty origin");
-        if (destination != null && !destination.isBlank()) {
-        } else {
-            throw new IllegalArgumentException("Empty desnation");
-        }
+        if (destination != null && !destination.isBlank()) 
+            throw new IllegalArgumentException("Empty destination");
         if (origin.equalsIgnoreCase(destination))
             throw new IllegalArgumentException("Origin and destination can't be the same");
     }
     
-    public void ensurePlane(){
-        if (plane == null) throw new IllegalStateException("The is no aircraft assigned to the flight");
+    private void ensurePlane(){
+        if (plane == null) throw new IllegalStateException("There is no aircraft assigned to the flight");
     }
     
     // Check availability for a given class
