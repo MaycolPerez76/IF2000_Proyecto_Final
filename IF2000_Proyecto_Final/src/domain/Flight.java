@@ -78,6 +78,8 @@ public class Flight {
     return departure;
     }
     
+    //Prueba
+    
     public Plane getPlane(){
     return plane;
     }
