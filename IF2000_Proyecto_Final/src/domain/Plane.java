@@ -31,11 +31,13 @@ public class Plane {
 
     // Reserves a seat based on class
     public boolean reserveSeat(String seatClass) {
-        if (hasAvailability(seatClass)) return false;
+        if (!hasAvailability(seatClass)) return false;
         if (seatClass.equalsIgnoreCase("business")) {
             businessOccupied++;
         } else if (seatClass.equalsIgnoreCase("economy")) {
             economyOccupied++;
+        }else{
+            return false;
         }
     return true;
     }
