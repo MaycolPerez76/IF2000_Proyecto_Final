@@ -17,6 +17,14 @@ public class Plane {
         this.economyOccupied = 0;
     }
 
+    public Plane(String model, int businessCapacity, int economyCapacity) {
+        this.model = model;
+        this.businessCapacity = businessCapacity;
+        this.economyCapacity = economyCapacity;
+    }
+    
+    
+
     // Checks availability based on class
     public boolean hasAvailability(String seatClass) {
         if(seatClass == null)return false;

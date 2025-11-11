@@ -1,5 +1,6 @@
 package Interface;
 
+import domain.Plane;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,7 +10,8 @@ public class Interface extends JPanel {
     private JComboBox<String> originCombo, destinationCombo, classCombo;
     private JTextField nameField, idField;
     private JTextArea ticketArea, invoiceArea;
-
+    private Plane plane;
+    
     public Interface() {
         initComponents();
     }
@@ -79,7 +81,25 @@ public class Interface extends JPanel {
         checkButton.addActionListener((ActionEvent e) -> {
             // FUNCIÓN: Debe verificar disponibilidad de asientos
             // Business: $275.00 | Economy: $201.30
-            ticketArea.setText("Check Availability - Función por implementar");
+            plane = new Plane("Boeing 737", 2, 2);
+              String selectedClass = (String) classCombo.getSelectedItem();
+
+    if (selectedClass == null || selectedClass.isEmpty()) {
+        ticketArea.setText("Please select a class.");
+        return;
+    }
+
+    boolean available = plane.checkAvailability(selectedClass);
+
+    if (available) {
+        int remaining = selectedClass.equalsIgnoreCase("Business")
+            ? plane.getBusinessCapacity() - plane.getBusinessOccupied()
+            : plane.getEconomyCapacity() - plane.getEconomyOccupied();
+
+        ticketArea.setText(selectedClass + " class is available.\nSeats remaining: " + remaining);
+    } else {
+        ticketArea.setText("No seats available in " + selectedClass + " class.");
+    }
         });
         
         JButton generateButton = new JButton("Generate Ticket and Invoice");
