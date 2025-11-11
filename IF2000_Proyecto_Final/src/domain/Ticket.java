@@ -1,19 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package domain;
 
-/**
- *
- * @author mayco
- */
+
 public class Ticket {
     private Flight flight;
-    private Person passenger;
+    private Passenger passenger;
     private String flightClass;
 
-    public Ticket(Flight flight, Person passenger, String flightClass) {
+    public Ticket(Flight flight, Passenger passenger, String flightClass) {
         this.flight = flight;
         this.passenger = passenger;
         this.flightClass = flightClass;
@@ -23,7 +16,7 @@ public class Ticket {
         return flight;
     }
 
-    public Person getPassenger() {
+    public Passenger getPassenger() {
         return passenger;
     }
 

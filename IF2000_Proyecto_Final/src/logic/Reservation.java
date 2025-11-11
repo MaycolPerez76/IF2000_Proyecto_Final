@@ -5,6 +5,7 @@
 package logic;
 
 import domain.Flight;
+import domain.Passenger;
 import domain.Ticket;
 
 /**
