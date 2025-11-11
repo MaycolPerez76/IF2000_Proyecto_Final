@@ -1,5 +1,6 @@
 package Interface;
 
+import domain.Flight;
 import domain.Plane;
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +12,7 @@ public class Interface extends JPanel {
     private JTextField nameField, idField;
     private JTextArea ticketArea, invoiceArea;
     private Plane plane;
-    
+        private Flight flight;
     public Interface() {
         initComponents();
     }
@@ -77,31 +78,76 @@ public class Interface extends JPanel {
         // Button panel (south)
         JPanel buttonPanel = new JPanel(new FlowLayout());
         
-        JButton checkButton = new JButton("Check Availability");
-        checkButton.addActionListener((ActionEvent e) -> {
-            // FUNCIÓN: Debe verificar disponibilidad de asientos
-            // Business: $275.00 | Economy: $201.30
-            plane = new Plane("Boeing 737", 2, 2);
-              String selectedClass = (String) classCombo.getSelectedItem();
+        
+        
+              //___________________________________________FUNCTION_1________________________________________________________________________
+JButton checkButton = new JButton("Check Availability");
+checkButton.addActionListener((ActionEvent e) -> {
+    // FUNCIÓN: Verificar disponibilidad de asientos
+    // Business: $275.00 | Economy: $201.30
+    String selectedClass = ((String) classCombo.getSelectedItem()).toLowerCase();
+    String origin = (String) originCombo.getSelectedItem();
+    String destination = (String) destinationCombo.getSelectedItem();
 
-    if (selectedClass == null || selectedClass.isEmpty()) {
-        ticketArea.setText("Please select a class.");
+  
+    int businessCap = 1;
+    int economyCap = 1;
+    int businessOccup = 1;
+    int economyOccup = 1;
+
+    switch (destination) {
+        case "Mexico":
+            businessCap = 5;
+            economyCap = 6;
+            businessOccup = 2;
+            economyOccup = 3;
+            break;
+        case "San Jose":
+            businessCap = 6;
+            economyCap = 8;
+            businessOccup = 4;
+            economyOccup = 8;
+            break;
+        case "Liberia":
+            businessCap = 3;
+            economyCap = 4;
+            businessOccup = 3;
+            economyOccup = 2;
+            break;
+        case "Colombia":
+            businessCap = 5;
+            economyCap = 7;
+            businessOccup = 3;
+            economyOccup = 5;
+            break;
+        case "Nicaragua":
+            businessCap = 4;
+            economyCap = 5;
+            businessOccup = 4;
+            economyOccup = 5;
+            break;
+    }
+    plane = new Plane("Boeing 737", businessCap, economyCap, businessOccup, economyOccup);
+    flight = new Flight(origin, destination, plane);
+
+    boolean locationValidated = flight.validateLocations(origin, destination);
+    if (!locationValidated) {
+        ticketArea.setText("Error, origin and destination must be different.");
         return;
     }
 
-    boolean available = plane.checkAvailability(selectedClass);
-
-    if (available) {
-        int remaining = selectedClass.equalsIgnoreCase("Business")
-            ? plane.getBusinessCapacity() - plane.getBusinessOccupied()
-            : plane.getEconomyCapacity() - plane.getEconomyOccupied();
-
-        ticketArea.setText(selectedClass + " class is available.\nSeats remaining: " + remaining);
+    boolean isAvailable = plane.hasAvailability(selectedClass);
+    if (isAvailable) {
+        ticketArea.setText("✅ Seats available in " + selectedClass.toUpperCase() +
+                "\nBusiness: " + plane.getBusinessCapacity() + " total, " + plane.getBusinessOccupied()  + " occupied" +
+                "\nEconomy: " + plane.getEconomyCapacity() + " total, " + plane.getEconomyOccupied() + " occupied");
     } else {
-        ticketArea.setText("No seats available in " + selectedClass + " class.");
+        ticketArea.setText("❌ No seats available in " + selectedClass.toUpperCase());
     }
-        });
+});
+
         
+                //___________________________________________FUNCTION_2_______________________________________________________________________
         JButton generateButton = new JButton("Generate Ticket and Invoice");
         generateButton.addActionListener((ActionEvent e) -> {
             // FUNCIÓN: Debe generar ticket y factura
@@ -110,12 +156,41 @@ public class Interface extends JPanel {
             invoiceArea.setText("Invoice - Función por implementar");
         });
         
-        JButton seatsButton = new JButton("View Available Seats");
-        seatsButton.addActionListener((ActionEvent e) -> {
-            // FUNCIÓN: Mostrar estado de asientos disponibles
-            ticketArea.setText("View Seats - Función por implementar");
-        });
+     //___________________________________________FUNCTION_3________________________________________________________________________
+JButton seatsButton = new JButton("View Available Seats");
+seatsButton.addActionListener((ActionEvent e) -> {
+    // FUNCIÓN: Mostrar estado de asientos disponibles
+    if (plane == null) {
+        ticketArea.setText("Please check availability first.");
+        return;
+    }
+
+    String selectedClass = ((String) classCombo.getSelectedItem()).toLowerCase();
+
+    int totalSeats = 0;
+    int occupiedSeats = 0;
+    int availableSeats = 0;
+
+    if (selectedClass.equals("business")) {
+        totalSeats = plane.getBusinessCapacity();
+        occupiedSeats = plane.getBusinessOccupied();
+        availableSeats = totalSeats - occupiedSeats;
+    } else if (selectedClass.equals("economy")) {
+        totalSeats = plane.getEconomyCapacity();
+        occupiedSeats = plane.getEconomyOccupied();
+        availableSeats = totalSeats - occupiedSeats;
+    }
+
+    ticketArea.setText(
+            "✈️ CLASS: " + selectedClass.toUpperCase() +
+            "\nTotal seats: " + totalSeats +
+            "\nOccupied seats: " + occupiedSeats +
+            "\nAvailable seats: " + availableSeats
+    );
+});
         
+
+
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> System.exit(0));
         
