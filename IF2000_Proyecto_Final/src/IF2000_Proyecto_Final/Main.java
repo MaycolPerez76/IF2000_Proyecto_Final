@@ -16,9 +16,9 @@ public class Main {
         // TODO code application logic here
         // Maycol
         
-    }
     
-}
+    
+
  
          // Crear la ventana principal
         JFrame frame = new JFrame("Sistema de Reservas de Vuelos");
