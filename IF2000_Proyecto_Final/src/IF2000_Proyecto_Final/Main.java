@@ -1,26 +1,23 @@
 
 package IF2000_Proyecto_Final;
-import javax.swing.JFrame;
-import Interface.Interface;
+/*import javax.swing.JFrame;
+import Interface.Interface;*/
 
-/**
- *
- * @author mayco
- */
+
+import Interface.Start;
+
 public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
+   
     public static void main(String[] args) {
         // TODO code application logic here
         // Maycol
         
-    }
     
-}
+    
+         new Start();  // abre la ventana de inicio
  
-         // Crear la ventana principal
+       /*  // Crear la ventana principal
         JFrame frame = new JFrame("Sistema de Reservas de Vuelos");
         
         // Configurar la interfaz
@@ -31,6 +28,6 @@ public class Main {
         frame.add(interfacePanel);
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null); // Centrar en la pantalla
-        frame.setVisible(true);
+        frame.setVisible(true);*/
         }
     }
