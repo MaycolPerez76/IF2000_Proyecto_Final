@@ -32,13 +32,11 @@ public class Flight {
     this.plane = plane;
     }
 
-    private void validateLocations(String origin, String destination){
-        if (origin == null || origin.isBlank())
-            throw new IllegalArgumentException("Empty origin");
-        if (destination != null && !destination.isBlank()) 
-            throw new IllegalArgumentException("Empty destination");
-        if (origin.equalsIgnoreCase(destination))
-            throw new IllegalArgumentException("Origin and destination can't be the same");
+    public boolean validateLocations(String origin, String destination){
+        if (origin.equals(destination)) {
+            return false;      
+        }
+        return true;
     }
     
     private void ensurePlane(){

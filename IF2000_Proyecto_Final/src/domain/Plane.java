@@ -11,10 +11,10 @@ public class Plane {
     // Constructor
     public Plane(String model) {
         this.model = model;
-        this.businessCapacity = 2; // fixed capacity
-        this.economyCapacity = 2;  // fixed capacity
-        this.businessOccupied = 0;
-        this.economyOccupied = 0;
+        this.businessCapacity = 0; // fixed capacity
+        this.economyCapacity = 0;  // fixed capacity
+        this.businessOccupied = 3;
+        this.economyOccupied = 5;
     }
 
     public Plane(String model, int businessCapacity, int economyCapacity) {
@@ -22,20 +22,32 @@ public class Plane {
         this.businessCapacity = businessCapacity;
         this.economyCapacity = economyCapacity;
     }
+
+    public Plane(String model, int businessCapacity, int economyCapacity, int businessOccupied, int economyOccupied) {
+        this.model = model;
+        this.businessCapacity = businessCapacity;
+        this.economyCapacity = economyCapacity;
+        this.businessOccupied = businessOccupied;
+        this.economyOccupied = economyOccupied;
+    }
     
     
 
+    
+    
+    
+    
+    
     // Checks availability based on class
-    public boolean hasAvailability(String seatClass) {
-        if(seatClass == null)return false;
-        if (seatClass.equalsIgnoreCase("business")) {
-            return businessOccupied < businessCapacity;
-        } else if (seatClass.equalsIgnoreCase("economy")) {
-            return economyOccupied < economyCapacity;
-        } else {
-            return false; // invalid class
-        }
+public boolean hasAvailability(String seatClass) {
+    if (seatClass.equalsIgnoreCase("business")) {
+        return businessOccupied < businessCapacity;
+    } else if (seatClass.equalsIgnoreCase("economy")) {
+        return economyOccupied < economyCapacity;
+    } else {
+        return false;
     }
+}
 
     // Reserves a seat based on class
     public boolean reserveSeat(String seatClass) {
@@ -44,10 +56,8 @@ public class Plane {
             businessOccupied++;
         } else if (seatClass.equalsIgnoreCase("economy")) {
             economyOccupied++;
-        }else{
-            return false;
         }
-    return true;
+        return true;
     }
 
     public boolean checkAvailability(String clase){
