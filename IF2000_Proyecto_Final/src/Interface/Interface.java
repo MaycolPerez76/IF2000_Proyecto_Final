@@ -1,22 +1,26 @@
 package Interface;
 
 import domain.Flight;
+import domain.Invoice;
 import domain.Passenger;
 import domain.Plane;
 import domain.Ticket;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import logic.CalculateAmount;
+import logic.ValidateInformation;
 
 public class Interface extends JPanel {
     
     private JComboBox<String> originCombo, destinationCombo, classCombo;
     private JTextField nameField, idField;
-    private JTextArea ticketArea, invoiceArea, checkAvailability, viewAvailableSeats;
+    private JTextArea ticketArea, invoiceArea, viewAvailableSeats;
     private Plane plane;
     private Flight flight;
     private Passenger passenger;
     private Ticket ticket;
+    private Invoice total;
     
     public Interface() {
         initComponents();
@@ -77,14 +81,7 @@ public class Interface extends JPanel {
         JScrollPane invoiceScroll = new JScrollPane(invoiceArea);
         invoicePanel.add(invoiceScroll, BorderLayout.CENTER);
         
-        // CheckAvailability
-        JPanel checkAvailabilityPanel = new JPanel(new BorderLayout());
-        checkAvailabilityPanel.setBorder(BorderFactory.createTitledBorder("Check availability"));
-        checkAvailability = new JTextArea(8, 20);
-        checkAvailability.setEditable(false);
-        checkAvailability.setText("Availability will appear here...");
-        JScrollPane checkAvailabilityScroll = new JScrollPane(checkAvailability);
-        checkAvailabilityPanel.add(checkAvailabilityScroll, BorderLayout.CENTER);
+
         
         // ViewAvailableSeats
         JPanel viewAvailableSeatsPanel = new JPanel(new BorderLayout());
@@ -99,7 +96,7 @@ public class Interface extends JPanel {
         resultsPanel.add(ticketPanel);
         resultsPanel.add(invoicePanel);
         resultsPanel.add(viewAvailableSeatsPanel);
-        resultsPanel.add(checkAvailabilityPanel);
+
         
 
         // Button panel (south)
@@ -159,17 +156,15 @@ checkButton.addActionListener((ActionEvent e) -> {
 
     boolean locationValidated = flight.validateLocations(origin, destination);
     if (!locationValidated) {
-        checkAvailability.setText("Error, origin and destination must be different.");
+JOptionPane.showMessageDialog(this, "Error, the origin and destination must to be different", " ", JOptionPane.INFORMATION_MESSAGE);
         return;
     }
 
     boolean isAvailable = plane.hasAvailability(selectedClass);
     if (isAvailable) {
-        checkAvailability.setText("Seats available in " + selectedClass.toUpperCase() +
-                "\nBusiness: " + plane.getBusinessCapacity() + " total, " + plane.getBusinessOccupied()  + " occupied" +
-                "\nEconomy: " + plane.getEconomyCapacity() + " total, " + plane.getEconomyOccupied() + " occupied");
+JOptionPane.showMessageDialog(this, "Seats available in " + selectedClass.toUpperCase() + " ", "successfully", JOptionPane.INFORMATION_MESSAGE);
     } else {
-        checkAvailability.setText("No seats available in " + selectedClass.toUpperCase());
+JOptionPane.showMessageDialog(this, "No seats available in " + selectedClass.toUpperCase() + " ", "yet", JOptionPane.INFORMATION_MESSAGE);
     }
 });
 
@@ -186,10 +181,17 @@ checkButton.addActionListener((ActionEvent e) -> {
             String destination = (String) destinationCombo.getSelectedItem();
             String travelClass = (String) classCombo.getSelectedItem();
 
-            if (name.isEmpty() || id.isEmpty()) {
-                ticketArea.setText("Please enter passenger name and ID.");
-                return;
+                          
+            Boolean validName = ValidateInformation.validateName(name);
+            Boolean validID = ValidateInformation.validateID(id);          
+            if (validName = false) {
+                          ticketArea.setText("There was an error validating your name, please check again.");
+                          return;
+            }  if (validID = false) {
+                          ticketArea.setText("There was an error validating your ID, please check again.");
+                          return;       
             }
+ 
 
             // 2. Verificar que ya se haya creado el vuelo (después de Check Availability)
             if (plane == null || flight == null) {
@@ -202,29 +204,26 @@ checkButton.addActionListener((ActionEvent e) -> {
             // Ajusta este constructor si tu clase Ticket es diferente
             ticket = new Ticket(flight, passenger, travelClass);
 
-            // 4. Mostrar información del ticket en su CUADRO correspondiente
-            ticketArea.setText(
-                    "TICKET INFORMATION\n" +
-                    "Passenger: " + passenger.getName() + " (" + passenger.getId() + ")\n" +
-                    "Origin: " + origin + "\n" +
-                    "Destination: " + destination + "\n" +
-                    "Class: " + travelClass + "\n" +
-                    "Plane: " + "Boeing 737"
-            );
+              total = new Invoice(ticket);
+              CalculateAmount.calcAmount(total, travelClass);
 
-            // 5. Factura sencilla (puedes ajustar precios luego)
-            double basePrice = travelClass.equalsIgnoreCase("Business") ? 275.00 : 201.30;
-            double tax = basePrice * 0.13; // 13% impuesto
-            double total = basePrice + tax;
 
-            invoiceArea.setText(
-                    "INVOICE\n" +
-                    "Passenger: " + passenger.getName() + "\n" +
-                    "Class: " + travelClass + "\n" +
-                    "Base price: $" + String.format("%.2f", basePrice) + "\n" +
-                    "Tax (13%): $" + String.format("%.2f", tax) + "\n" +
-                    "Total: $" + String.format("%.2f", total)
-            );
+  ticketArea.setText(
+                        "TICKET INFORMATION\n"
+                        + "Passenger: " + passenger.getName() + " (" + passenger.getId() + ")\n"
+                        + "Origin: " + origin + "\n"
+                        + "Destination: " + destination + "\n"
+                        + "Class: " + travelClass + "\n"
+                        + "Plane: " + "Boeing 737"
+                );
+  
+    invoiceArea.setText(
+            "INVOICE\n" +
+            "Passenger: " + passenger.getName() + "\n" +
+            "Route: " + origin + " -> " + destination + "\n" +
+            "Class: " + travelClass + "\n" +
+            "Amount: €" + total.getAmount() + "\n"
+    );
         });
         
      //___________________________________________FUNCTION_3________________________________________________________________________

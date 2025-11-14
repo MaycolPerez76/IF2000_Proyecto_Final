@@ -17,7 +17,7 @@ public class Start extends JFrame {
 
         // Intentar cargar desde el classpath (carpeta build/classes)
         try {
-            backgroundImage = new ImageIcon(getClass().getResource("/Interface/Plane.png")).getImage();
+ImageIcon icon = new ImageIcon(getClass().getResource("/Interface/Plane.png"));
             System.out.println("Imagen cargada desde classpath");
         } catch (Exception e) {
             System.out.println("No se encontró en classpath, intentando ruta directa...");
