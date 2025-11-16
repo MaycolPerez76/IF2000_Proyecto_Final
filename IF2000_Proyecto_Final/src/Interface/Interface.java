@@ -1,22 +1,30 @@
 package Interface;
 
 import domain.Flight;
+import domain.Invoice;
 import domain.Passenger;
 import domain.Plane;
 import domain.Ticket;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import logic.CalculateAmount;
+import logic.ValidateInformation;
 
 public class Interface extends JPanel {
     
     private JComboBox<String> originCombo, destinationCombo, classCombo;
     private JTextField nameField, idField;
-    private JTextArea ticketArea, invoiceArea, checkAvailability, viewAvailableSeats;
+    private JTextArea ticketArea, invoiceArea, viewAvailableSeats;
     private Plane plane;
     private Flight flight;
     private Passenger passenger;
     private Ticket ticket;
+    private Invoice total;
+    private Flight locations;
+    private Ticket ticketInfo;
+    private Invoice amount;
+    private double totalAmount;
     
     public Interface() {
         initComponents();
@@ -77,14 +85,7 @@ public class Interface extends JPanel {
         JScrollPane invoiceScroll = new JScrollPane(invoiceArea);
         invoicePanel.add(invoiceScroll, BorderLayout.CENTER);
         
-        // CheckAvailability
-        JPanel checkAvailabilityPanel = new JPanel(new BorderLayout());
-        checkAvailabilityPanel.setBorder(BorderFactory.createTitledBorder("Check availability"));
-        checkAvailability = new JTextArea(8, 20);
-        checkAvailability.setEditable(false);
-        checkAvailability.setText("Availability will appear here...");
-        JScrollPane checkAvailabilityScroll = new JScrollPane(checkAvailability);
-        checkAvailabilityPanel.add(checkAvailabilityScroll, BorderLayout.CENTER);
+
         
         // ViewAvailableSeats
         JPanel viewAvailableSeatsPanel = new JPanel(new BorderLayout());
@@ -99,7 +100,7 @@ public class Interface extends JPanel {
         resultsPanel.add(ticketPanel);
         resultsPanel.add(invoicePanel);
         resultsPanel.add(viewAvailableSeatsPanel);
-        resultsPanel.add(checkAvailabilityPanel);
+
         
 
         // Button panel (south)
@@ -107,151 +108,138 @@ public class Interface extends JPanel {
         
         
         
-              //___________________________________________FUNCTION_1________________________________________________________________________
-JButton checkButton = new JButton("Check Availability");
-checkButton.addActionListener((ActionEvent e) -> {
-    // FUNCIÓN: Verificar disponibilidad de asientos
-    // Business: $275.00 | Economy: $201.30
-    String selectedClass = ((String) classCombo.getSelectedItem()).toLowerCase();
-    String origin = (String) originCombo.getSelectedItem();
-    String destination = (String) destinationCombo.getSelectedItem();
+        //___________________________________________FUNCTION_1________________________________________________________________________
+        JButton checkButton = new JButton("Check Availability");
+        checkButton.addActionListener((ActionEvent e) -> {
+            //Atributos
+            String selectedClass = ((String) classCombo.getSelectedItem()).toLowerCase();
+            String origin = (String) originCombo.getSelectedItem();
+            String destination = (String) destinationCombo.getSelectedItem();
+            int businessCap = 1;
+            int economyCap = 1;
+            int businessOccup = 1;
+            int economyOccup = 1;
 
-  
-    int businessCap = 1;
-    int economyCap = 1;
-    int businessOccup = 1;
-    int economyOccup = 1;
+            //Funcion
+            switch (destination) {
+                case "Mexico":
+                    businessCap = 5;
+                    economyCap = 6;
+                    businessOccup = 2;
+                    economyOccup = 3;
+                    break;
+                case "San Jose":
+                    businessCap = 6;
+                    economyCap = 8;
+                    businessOccup = 4;
+                    economyOccup = 8;
+                    break;
+                case "Liberia":
+                    businessCap = 3;
+                    economyCap = 4;
+                    businessOccup = 3;
+                    economyOccup = 2;
+                    break;
+                case "Colombia":
+                    businessCap = 5;
+                    economyCap = 7;
+                    businessOccup = 3;
+                    economyOccup = 5;
+                    break;
+                case "Nicaragua":
+                    businessCap = 4;
+                    economyCap = 5;
+                    businessOccup = 4;
+                    economyOccup = 5;
+                    break;
+            }
 
-    switch (destination) {
-        case "Mexico":
-            businessCap = 5;
-            economyCap = 6;
-            businessOccup = 2;
-            economyOccup = 3;
-            break;
-        case "San Jose":
-            businessCap = 6;
-            economyCap = 8;
-            businessOccup = 4;
-            economyOccup = 8;
-            break;
-        case "Liberia":
-            businessCap = 3;
-            economyCap = 4;
-            businessOccup = 3;
-            economyOccup = 2;
-            break;
-        case "Colombia":
-            businessCap = 5;
-            economyCap = 7;
-            businessOccup = 3;
-            economyOccup = 5;
-            break;
-        case "Nicaragua":
-            businessCap = 4;
-            economyCap = 5;
-            businessOccup = 4;
-            economyOccup = 5;
-            break;
-    }
-    plane = new Plane("Boeing 737", businessCap, economyCap, businessOccup, economyOccup);
-    flight = new Flight(origin, destination, plane);
+            //Implementacion de las clases y metodos
+            plane = new Plane("Boeing 737", businessCap, economyCap, businessOccup, economyOccup);
+            flight = new Flight(origin, destination, plane);
+            boolean locationValidated = flight.validateLocations(origin, destination);
+            boolean isAvailable = plane.hasAvailability(selectedClass);
 
-    boolean locationValidated = flight.validateLocations(origin, destination);
-    if (!locationValidated) {
-        checkAvailability.setText("Error, origin and destination must be different.");
-        return;
-    }
+            //Funciones
+            if (!locationValidated) {
+                JOptionPane.showMessageDialog(this, "Error, the origin and destination must to be different", " ", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            if (isAvailable) {
+                JOptionPane.showMessageDialog(this, "Seats available in " + selectedClass.toUpperCase() + " ", "successfully", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "No seats available in " + selectedClass.toUpperCase() + " ", "Error", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
 
-    boolean isAvailable = plane.hasAvailability(selectedClass);
-    if (isAvailable) {
-        checkAvailability.setText("Seats available in " + selectedClass.toUpperCase() +
-                "\nBusiness: " + plane.getBusinessCapacity() + " total, " + plane.getBusinessOccupied()  + " occupied" +
-                "\nEconomy: " + plane.getEconomyCapacity() + " total, " + plane.getEconomyOccupied() + " occupied");
-    } else {
-        checkAvailability.setText("No seats available in " + selectedClass.toUpperCase());
-    }
-});
 
-        //TRABAJARRRRRRRRRRRRRRRRRRRR
+
                 //___________________________________________FUNCTION_2_______________________________________________________________________
         JButton generateButton = new JButton("Generate Ticket and Invoice");
         generateButton.addActionListener((ActionEvent e) -> {
-            // FUNCIÓN: Debe generar ticket y factura
-            // Validar campos y calcular montos
-            
-            String name = nameField.getText().trim();
-            String id = idField.getText().trim();
-            String origin = (String) originCombo.getSelectedItem();
-            String destination = (String) destinationCombo.getSelectedItem();
-            String travelClass = (String) classCombo.getSelectedItem();
+          // Datos base
+    String name = nameField.getText().trim();
+    String id = idField.getText().trim();
+    String origin = (String) originCombo.getSelectedItem();
+    String destination = (String) destinationCombo.getSelectedItem();
+    String travelClass = (String) classCombo.getSelectedItem();
+    String selectedClass = travelClass.toLowerCase();
 
-            if (name.isEmpty() || id.isEmpty()) {
-                ticketArea.setText("Please enter passenger name and ID.");
-                return;
-            }
-
-            // 2. Verificar que ya se haya creado el vuelo (después de Check Availability)
-            if (plane == null || flight == null) {
-                ticketArea.setText("Please check availability before generating the ticket.");
-                return;
-            }
-
-            // 3. Crear pasajero y ticket (usando tus clases del dominio)
-            passenger = new Passenger(name, id);
-            // Ajusta este constructor si tu clase Ticket es diferente
-            ticket = new Ticket(flight, passenger, travelClass);
-
-            // 4. Mostrar información del ticket en su CUADRO correspondiente
-            ticketArea.setText(
-                    "TICKET INFORMATION\n" +
-                    "Passenger: " + passenger.getName() + " (" + passenger.getId() + ")\n" +
-                    "Origin: " + origin + "\n" +
-                    "Destination: " + destination + "\n" +
-                    "Class: " + travelClass + "\n" +
-                    "Plane: " + "Boeing 737"
-            );
-
-            // 5. Factura sencilla (puedes ajustar precios luego)
-            double basePrice = travelClass.equalsIgnoreCase("Business") ? 275.00 : 201.30;
-            double tax = basePrice * 0.13; // 13% impuesto
-            double total = basePrice + tax;
-
-            invoiceArea.setText(
-                    "INVOICE\n" +
-                    "Passenger: " + passenger.getName() + "\n" +
-                    "Class: " + travelClass + "\n" +
-                    "Base price: $" + String.format("%.2f", basePrice) + "\n" +
-                    "Tax (13%): $" + String.format("%.2f", tax) + "\n" +
-                    "Total: $" + String.format("%.2f", total)
-            );
-        });
-        
-     //___________________________________________FUNCTION_3________________________________________________________________________
-JButton seatsButton = new JButton("View Available Seats");
-seatsButton.addActionListener((ActionEvent e) -> {
-    // FUNCIÓN: Mostrar estado de asientos disponibles
-    if (plane == null) {
-        viewAvailableSeats.setText("Please check availability first.");
+    // Validaciones
+    if (!ValidateInformation.validateName(name)) {
+        ticketArea.setText("There was an error validating your name.");
+        return;
+    }
+    if (!ValidateInformation.validateID(id)) {
+        ticketArea.setText("There was an error validating your ID.");
+        return;
+    }
+    if (!plane.hasAvailability(selectedClass)) {
+        JOptionPane.showMessageDialog(this, "The plane class is not available.");
         return;
     }
 
-    String selectedClass = ((String) classCombo.getSelectedItem()).toLowerCase();
+    // Creacion de objetos  y metodos
+    passenger = new Passenger(name, id);
+    locations = new Flight(origin, destination);
+    plane = new Plane(travelClass);
+    Ticket ticket = new Ticket(passenger, locations, plane);
+    Invoice invoice = new Invoice(0, passenger, locations, plane);
+    CalculateAmount.calcAmount(invoice, travelClass);
+    boolean isAvailable = plane.hasAvailability(selectedClass);
+    
+    // Mostrar informacion de ticket y Invoice
+    if (isAvailable) {
+    ticketArea.setText(ticket.showTicketInfo());
+    invoiceArea.setText(invoice.showInvoice());
+    } else {
+  JOptionPane.showMessageDialog(this, "The class " + selectedClass.toUpperCase() + " is not available " + " ", "Error", JOptionPane.INFORMATION_MESSAGE);
+    }
+});
 
+     //___________________________________________FUNCTION_3________________________________________________________________________
+JButton seatsButton = new JButton("View Available Seats");
+seatsButton.addActionListener((ActionEvent e) -> {
+    //Atributos
+    String selectedClass = ((String) classCombo.getSelectedItem()).toLowerCase();
     int totalSeats = 0;
     int occupiedSeats = 0;
     int availableSeats = 0;
 
+        //Funciones
+        if (plane == null) {
+        viewAvailableSeats.setText("Please check availability first.");
+        return;
+    }
     if (selectedClass.equals("business")) {
         totalSeats = plane.getBusinessCapacity();
         occupiedSeats = plane.getBusinessOccupied();
-        availableSeats = totalSeats - occupiedSeats;
+        availableSeats = totalSeats - occupiedSeats; 
     } else if (selectedClass.equals("economy")) {
         totalSeats = plane.getEconomyCapacity();
         occupiedSeats = plane.getEconomyOccupied();
         availableSeats = totalSeats - occupiedSeats;
     }
-
     viewAvailableSeats.setText(
             "CLASS: " + selectedClass.toUpperCase() +
             "\nTotal seats: " + totalSeats +
@@ -264,12 +252,10 @@ seatsButton.addActionListener((ActionEvent e) -> {
 
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> System.exit(0));
-        
         buttonPanel.add(checkButton);
         buttonPanel.add(generateButton);
         buttonPanel.add(seatsButton);
         buttonPanel.add(exitButton);
-
         // Add all panels
         add(formPanel, BorderLayout.NORTH);
         add(resultsPanel, BorderLayout.CENTER);

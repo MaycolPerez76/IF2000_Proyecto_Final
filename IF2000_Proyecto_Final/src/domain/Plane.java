@@ -7,33 +7,25 @@ public class Plane {
     private int businessOccupied;
     private int economyOccupied;
 
-    // Constructor
+    // Constructor por defecto
     public Plane(String model) {
         this.model = model;
-        this.businessCapacity = 0; // fixed capacity
-        this.economyCapacity = 0;  // fixed capacity
-        this.businessOccupied = 3;
-        this.economyOccupied = 5;
+        this.businessCapacity = 10;
+        this.economyCapacity = 50;
+        this.businessOccupied = 0;
+        this.economyOccupied = 0;
     }
 
-    public Plane(String model, int businessCapacity, int economyCapacity) {
-        this.model = model;
-        this.businessCapacity = businessCapacity;
-        this.economyCapacity = economyCapacity;
-    }
+    // Constructor COMPLETO (Úsalo siempre)
+    public Plane(String model, int businessCapacity, int economyCapacity,
+                 int businessOccupied, int economyOccupied) {
 
-    public Plane(String model, int businessCapacity, int economyCapacity, int businessOccupied, int economyOccupied) {
         this.model = model;
         this.businessCapacity = businessCapacity;
         this.economyCapacity = economyCapacity;
         this.businessOccupied = businessOccupied;
         this.economyOccupied = economyOccupied;
     }
-    
-    
-
-    
-    
     
     
     

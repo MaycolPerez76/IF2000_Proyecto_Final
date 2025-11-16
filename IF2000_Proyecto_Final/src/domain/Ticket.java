@@ -1,34 +1,32 @@
 package domain;
 
-
 public class Ticket {
-    private Flight flight;
     private Passenger passenger;
-    private String flightClass;
+    private Flight locations;
+    private Plane travelClass;
 
-    public Ticket(Flight flight, Passenger passenger, String flightClass) {
-        this.flight = flight;
+    public Ticket(Passenger passenger, Flight locations, Plane travelClass) {
         this.passenger = passenger;
-        this.flightClass = flightClass;
-    }
-
-    public Flight getFlight() {
-        return flight;
+        this.locations = locations;
+        this.travelClass = travelClass;
     }
 
     public Passenger getPassenger() {
         return passenger;
     }
-
-    public String getFlightClass() {
-        return flightClass;
+    public Flight getLocations() { 
+        return locations; 
+    }
+    public Plane getTravelClass() {
+        return travelClass; 
     }
 
-
-    public void showTicketInfo() {
-        System.out.println("=== TICKET ===");
-        System.out.println("Flight: " + flight.getOrigin() + " -> " + flight.getDestination());
-        System.out.println("Class: " + flightClass);
-        System.out.println("Passenger: " + passenger.getName());
+    public String showTicketInfo() {
+        return "TICKET INFORMATION\n"
+            + "Passenger: " + passenger.getName() + " (" + passenger.getId() + ")\n"
+            + "Origin: " + locations.getOrigin() + "\n"
+            + "Destination: " + locations.getDestination() + "\n"
+            + "Class: " + travelClass.getModel() + "\n"
+            + "Plane: Boeing 737";
     }
 }
