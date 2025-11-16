@@ -8,14 +8,19 @@ import domain.Ticket;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import logic.CalculateAmount;
 import logic.ValidateInformation;
 
 public class Interface extends JPanel {
     
-    private JComboBox<String> originCombo, destinationCombo, classCombo;
+    private JComboBox<String> originCombo, destinationCombo, classCombo, timeCombo;
     private JTextField nameField, idField;
     private JTextArea ticketArea, invoiceArea, viewAvailableSeats;
+    private JSpinner dateSpinner, luggageSpinner;
+    private JLabel dateLabel, timeLabel, luggageLabel;
     private Plane plane;
     private Flight flight;
     private Passenger passenger;
@@ -36,33 +41,53 @@ public class Interface extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Form panel (left) - GridLayout for alignment
-        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        JPanel formPanel = new JPanel(new GridLayout(8, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createTitledBorder("Reservation Details"));
         
-        // Origin - MANTENIDO
+        // Origin
         formPanel.add(new JLabel("Origin:"));
         originCombo = new JComboBox<>(new String[]{"San Jose", "Liberia","Limon"});
         formPanel.add(originCombo);
 
-        // Destination - MANTENIDO
+        // Destination
         formPanel.add(new JLabel("Destination:"));
         destinationCombo = new JComboBox<>(new String[]{"San Jose", "Liberia","Mexico","Nicaragua","Colombia"});
         formPanel.add(destinationCombo);
 
-        // Class - MANTENIDO
+        // Class
         formPanel.add(new JLabel("Class:"));
         classCombo = new JComboBox<>(new String[]{"Business", "Economy"});
         formPanel.add(classCombo);
 
-        // Full name - Empty field - MANTENIDO
+        // Date
+        dateLabel = new JLabel("Date:");
+        formPanel.add(dateLabel);
+        dateSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
+        dateSpinner.setEditor(dateEditor);
+        formPanel.add(dateSpinner);
+
+        // Time
+        timeLabel = new JLabel("Time:");
+        formPanel.add(timeLabel);
+        timeCombo = new JComboBox<>();
+        formPanel.add(timeCombo);
+
+        // Full name
         formPanel.add(new JLabel("Full Name:"));
         nameField = new JTextField();
         formPanel.add(nameField);
 
-        // Identification - MANTENIDO
+        // Identification
         formPanel.add(new JLabel("ID:"));
         idField = new JTextField();
         formPanel.add(idField);
+
+        // Luggage (kg)
+        luggageLabel = new JLabel("Luggage (kg):");
+        formPanel.add(luggageLabel);
+        luggageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 30, 1));
+        formPanel.add(luggageSpinner);
 
         // Results panel (center)
         JPanel resultsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
@@ -85,8 +110,6 @@ public class Interface extends JPanel {
         JScrollPane invoiceScroll = new JScrollPane(invoiceArea);
         invoicePanel.add(invoiceScroll, BorderLayout.CENTER);
         
-
-        
         // ViewAvailableSeats
         JPanel viewAvailableSeatsPanel = new JPanel(new BorderLayout());
         viewAvailableSeatsPanel.setBorder(BorderFactory.createTitledBorder("View Available Seats"));
@@ -96,17 +119,12 @@ public class Interface extends JPanel {
         JScrollPane viewAvailableSeatsScroll = new JScrollPane(viewAvailableSeats);
         viewAvailableSeatsPanel.add(viewAvailableSeatsScroll, BorderLayout.CENTER);
 
-
         resultsPanel.add(ticketPanel);
         resultsPanel.add(invoicePanel);
         resultsPanel.add(viewAvailableSeatsPanel);
 
-        
-
         // Button panel (south)
         JPanel buttonPanel = new JPanel(new FlowLayout());
-        
-        
         
         //___________________________________________FUNCTION_1________________________________________________________________________
         JButton checkButton = new JButton("Check Availability");
@@ -162,103 +180,161 @@ public class Interface extends JPanel {
 
             //Funciones
             if (!locationValidated) {
-                JOptionPane.showMessageDialog(this, "Error, the origin and destination must to be different", " ", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error, the origin and destination must to be different", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (isAvailable) {
-                JOptionPane.showMessageDialog(this, "Seats available in " + selectedClass.toUpperCase() + " ", "successfully", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Seats available in " + selectedClass.toUpperCase(), "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "No seats available in " + selectedClass.toUpperCase() + " ", "Error", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No seats available in " + selectedClass.toUpperCase(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-
-
-                //___________________________________________FUNCTION_2_______________________________________________________________________
+        //___________________________________________FUNCTION_2_______________________________________________________________________
         JButton generateButton = new JButton("Generate Ticket and Invoice");
         generateButton.addActionListener((ActionEvent e) -> {
-          // Datos base
-    String name = nameField.getText().trim();
-    String id = idField.getText().trim();
-    String origin = (String) originCombo.getSelectedItem();
-    String destination = (String) destinationCombo.getSelectedItem();
-    String travelClass = (String) classCombo.getSelectedItem();
-    String selectedClass = travelClass.toLowerCase();
+            // Datos base
+            String name = nameField.getText().trim();
+            String id = idField.getText().trim();
+            String origin = (String) originCombo.getSelectedItem();
+            String destination = (String) destinationCombo.getSelectedItem();
+            String travelClass = (String) classCombo.getSelectedItem();
+            String selectedClass = travelClass.toLowerCase();
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(dateSpinner.getValue());
+            String time = (String) timeCombo.getSelectedItem();
+            int luggageKg = (int) luggageSpinner.getValue();
 
-    // Validaciones
-    if (!ValidateInformation.validateName(name)) {
-        ticketArea.setText("There was an error validating your name.");
-        return;
-    }
-    if (!ValidateInformation.validateID(id)) {
-        ticketArea.setText("There was an error validating your ID.");
-        return;
-    }
-    if (!plane.hasAvailability(selectedClass)) {
-        JOptionPane.showMessageDialog(this, "The plane class is not available.");
-        return;
-    }
+            // Validaciones de nombre (solo letras)
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter your full name", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!name.matches("[a-zA-Z ]+")) {
+                JOptionPane.showMessageDialog(this, "Name can only contain letters and spaces", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    // Creacion de objetos  y metodos
-    passenger = new Passenger(name, id);
-    locations = new Flight(origin, destination);
-    plane = new Plane(travelClass);
-    Ticket ticket = new Ticket(passenger, locations, plane);
-    Invoice invoice = new Invoice(0, passenger, locations, plane);
-    CalculateAmount.calcAmount(invoice, travelClass);
-    boolean isAvailable = plane.hasAvailability(selectedClass);
-    
-    // Mostrar informacion de ticket y Invoice
-    if (isAvailable) {
-    ticketArea.setText(ticket.showTicketInfo());
-    invoiceArea.setText(invoice.showInvoice());
-    } else {
-  JOptionPane.showMessageDialog(this, "The class " + selectedClass.toUpperCase() + " is not available " + " ", "Error", JOptionPane.INFORMATION_MESSAGE);
-    }
-});
+            // Validaciones de ID (solo números)
+            if (id.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter your ID", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!id.matches("\\d+")) {
+                JOptionPane.showMessageDialog(this, "ID can only contain numbers", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-     //___________________________________________FUNCTION_3________________________________________________________________________
-JButton seatsButton = new JButton("View Available Seats");
-seatsButton.addActionListener((ActionEvent e) -> {
-    //Atributos
-    String selectedClass = ((String) classCombo.getSelectedItem()).toLowerCase();
-    int totalSeats = 0;
-    int occupiedSeats = 0;
-    int availableSeats = 0;
+            // Validaciones de disponibilidad
+            if (plane == null) {
+                JOptionPane.showMessageDialog(this, "Please check availability first", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!plane.hasAvailability(selectedClass)) {
+                JOptionPane.showMessageDialog(this, "The " + travelClass + " class is not available", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        //Funciones
-        if (plane == null) {
-        viewAvailableSeats.setText("Please check availability first.");
-        return;
-    }
-    if (selectedClass.equals("business")) {
-        totalSeats = plane.getBusinessCapacity();
-        occupiedSeats = plane.getBusinessOccupied();
-        availableSeats = totalSeats - occupiedSeats; 
-    } else if (selectedClass.equals("economy")) {
-        totalSeats = plane.getEconomyCapacity();
-        occupiedSeats = plane.getEconomyOccupied();
-        availableSeats = totalSeats - occupiedSeats;
-    }
-    viewAvailableSeats.setText(
-            "CLASS: " + selectedClass.toUpperCase() +
-            "\nTotal seats: " + totalSeats +
-            "\nOccupied seats: " + occupiedSeats +
-            "\nAvailable seats: " + availableSeats
-    );
-});
+            // Creacion de objetos y metodos
+            passenger = new Passenger(name, id);
+            locations = new Flight(origin, destination);
+            plane = new Plane(travelClass);
+            Ticket ticket = new Ticket(passenger, locations, plane);
+            Invoice invoice = new Invoice(0, passenger, locations, plane);
+            CalculateAmount.calcAmount(invoice, travelClass);
+            
+            // Mostrar informacion de ticket y Invoice
+            ticketArea.setText(ticket.showTicketInfo());
+            invoiceArea.setText(invoice.showInvoice());
+            
+            JOptionPane.showMessageDialog(this, "Reservation completed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        //___________________________________________FUNCTION_3________________________________________________________________________
+        JButton seatsButton = new JButton("View Available Seats");
+        seatsButton.addActionListener((ActionEvent e) -> {
+            //Atributos
+            String selectedClass = ((String) classCombo.getSelectedItem()).toLowerCase();
+            int totalSeats = 0;
+            int occupiedSeats = 0;
+            int availableSeats = 0;
+
+            //Funciones
+            if (plane == null) {
+                viewAvailableSeats.setText("Please check availability first.");
+                return;
+            }
+            if (selectedClass.equals("business")) {
+                totalSeats = plane.getBusinessCapacity();
+                occupiedSeats = plane.getBusinessOccupied();
+                availableSeats = totalSeats - occupiedSeats; 
+            } else if (selectedClass.equals("economy")) {
+                totalSeats = plane.getEconomyCapacity();
+                occupiedSeats = plane.getEconomyOccupied();
+                availableSeats = totalSeats - occupiedSeats;
+            }
+            viewAvailableSeats.setText(
+                    "CLASS: " + selectedClass.toUpperCase() +
+                    "\nTotal seats: " + totalSeats +
+                    "\nOccupied seats: " + occupiedSeats +
+                    "\nAvailable seats: " + availableSeats
+            );
+        });
         
-
-
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> System.exit(0));
         buttonPanel.add(checkButton);
         buttonPanel.add(generateButton);
         buttonPanel.add(seatsButton);
         buttonPanel.add(exitButton);
+        
         // Add all panels
         add(formPanel, BorderLayout.NORTH);
         add(resultsPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+
+        initializeDateSpinner();
+    }
+
+    private void initializeDateSpinner() {
+        Calendar calendar = Calendar.getInstance();
+        Date today = calendar.getTime();
+        
+        calendar.add(Calendar.DAY_OF_YEAR, 30);
+        Date maxDate = calendar.getTime();
+        
+        SpinnerDateModel dateModel = new SpinnerDateModel(today, today, maxDate, Calendar.DAY_OF_YEAR);
+        dateSpinner.setModel(dateModel);
+        
+        dateSpinner.addChangeListener(e -> {
+            loadTimeSlots((Date) dateSpinner.getValue());
+        });
+        
+        loadTimeSlots(today);
+    }
+
+    private void loadTimeSlots(Date selectedDate) {
+        if (timeCombo != null) {
+            timeCombo.removeAllItems();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(selectedDate);
+            int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+            
+            if (dayOfWeek == Calendar.SUNDAY) {
+                for (int hour = 5; hour <= 21; hour += 2) {
+                    timeCombo.addItem(String.format("%02d:00", hour));
+                }
+                timeCombo.addItem("23:00");
+            } else {
+                for (int hour = 5; hour <= 21; hour++) {
+                    timeCombo.addItem(String.format("%02d:00", hour));
+                }
+            }
+        }
+    }
+
+    private double calculateLuggageFee(int luggageKg) {
+        double freeAllowance = 15.0;
+        if (luggageKg <= freeAllowance) return 0.0;
+        return (luggageKg - freeAllowance) * 2.0;
     }
 }
