@@ -2,20 +2,20 @@ package domain;
 
 public class Ticket {
     private final Passenger passenger;
-    private final Flight locations;
+    private final Flight flight;
     private final String travelClass;
 
-    public Ticket(Passenger passenger, Flight locations, String travelClass) {
+    public Ticket(Passenger passenger, Flight flight, String travelClass) {
         this.passenger = passenger;
-        this.locations = locations;
+        this.flight = flight;
         this.travelClass = travelClass;
     }
 
     public Passenger getPassenger() {
         return passenger;
     }
-    public Flight getLocations() { 
-        return locations; 
+    public Flight getFlight() { 
+        return flight; 
     }
     public String getTravelClass() {
         return travelClass; 
@@ -24,9 +24,9 @@ public class Ticket {
     public String showTicketInfo() {
         return "TICKET INFORMATION\n"
             + "Passenger: " + passenger.getName() + " (" + passenger.getId() + ")\n"
-            + "Origin: " + locations.getOrigin() + "\n"
-            + "Destination: " + locations.getDestination() + "\n"
+            + "Origin: " + flight.getOrigin() + "\n"
+            + "Destination: " + flight.getDestination() + "\n"
             + "Class: " + travelClass + "\n"
-            + "Plane: " + locations.getPlane().getModel();
+            + "Plane: " + flight.getPlane().getModel();
     }
 }
