@@ -21,6 +21,6 @@ public class Reservation {
 
         flight.reserveSeat(flightClass);
         System.out.println("Reservation successful!");
-        return new Ticket(flight, passenger, flightClass);
+        return new Ticket(passenger, flight, flightClass);
     }
 }

@@ -34,7 +34,7 @@ public void reserveSeat(Plane plane, String flightClass) {
 
         }
     } else {
-        System.out.println("No hay disponibilidad en " + flightClass);
+        System.out.println("There is no availability in " + flightClass);
     }
 }
 

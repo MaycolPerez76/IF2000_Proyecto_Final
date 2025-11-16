@@ -15,22 +15,22 @@ public class Start extends JFrame {
         setSize(900, 600);
         setLocationRelativeTo(null);
 
-        // Intentar cargar desde el classpath (carpeta build/classes)
+        
         try {
 ImageIcon icon = new ImageIcon(getClass().getResource("/Interface/Plane.png"));
-            System.out.println("Imagen cargada desde classpath");
+            System.out.println("Image uploaded from classpath");
         } catch (Exception e) {
-            System.out.println("No se encontró en classpath, intentando ruta directa...");
+            System.out.println("It was not found in classpath, trying direct route...");
         }
 
-        // Si no se encontró, intentar con la ruta directa
+        
         if (backgroundImage == null) {
             File f = new File("src/Interface/Plane.png");
             if (f.exists()) {
                 backgroundImage = new ImageIcon(f.getAbsolutePath()).getImage();
-                System.out.println("Imagen cargada desde: " + f.getAbsolutePath());
+                System.out.println("Image uploaded from: " + f.getAbsolutePath());
             } else {
-                System.out.println("No se encontró la imagen en ninguna ruta");
+                System.out.println("The image was nor found on any route");
             }
         }
 
