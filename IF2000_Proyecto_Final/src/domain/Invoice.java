@@ -1,41 +1,42 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package domain;
-/**
- *
- * @author mayco
- */
+
 public class Invoice {
-    private Ticket ticket;
-    private double amount;
+   private double amount;
+    private Passenger passenger;
+    private Flight locations;
+    private Plane travelClass;
 
-        public Invoice () {
+    public Invoice() {}
+
+    public Invoice(double amount, Passenger passenger, Flight locations, Plane travelClass) {
+        this.amount = amount;
+        this.passenger = passenger;
+        this.locations = locations;
+        this.travelClass = travelClass;
     }
 
-    
-    public Invoice(Ticket ticket) {
-        this.ticket = ticket;
-    }
-
-    public Ticket getTicket() {
-        return ticket;
-    }
-
-    public double getAmount() {
+    public double getAmount() { 
         return amount;
     }
-
     public void setAmount(double amount) {
         this.amount = amount;
     }
 
+    public Passenger getPassenger() { 
+        return passenger;
+    }
+    public Flight getLocations() { 
+        return locations; 
+    }
+    public Plane getTravelClass() {
+        return travelClass; 
+    }
 
-    public void showInvoice() {
-        System.out.println("=== INVOICE ===");
-        System.out.println("Flight: " + ticket.getFlight().getOrigin() + " -> " + ticket.getFlight().getDestination());
-        System.out.println("Passenger: " + ticket.getPassenger().getName());
-        System.out.println("Amount: €" + amount);
+    public String showInvoice() {
+        return "INVOICE\n"
+            + "Passenger: " + passenger.getName() + "\n"
+            + "Route: " + locations.getOrigin() + " -> " + locations.getDestination() + "\n"
+            + "Class: " + travelClass.getModel() + "\n"
+            + "Amount: €" + amount + "\n";
     }
 }
