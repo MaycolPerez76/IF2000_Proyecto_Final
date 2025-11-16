@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import logic.CalculateAmount;
-import logic.ValidateInformation;
+//import logic.ValidateInformation;
 
 public class Interface extends JPanel {
     
@@ -24,12 +24,14 @@ public class Interface extends JPanel {
     private Plane plane;
     private Flight flight;
     private Passenger passenger;
-    private Ticket ticket;
-    private Invoice total;
-    private Flight locations;
-    private Ticket ticketInfo;
-    private Invoice amount;
-    private double totalAmount;
+    //private Ticket ticket;
+    //private Invoice total;
+    //private Ticket ticketInfo;
+    //private Invoice amount;
+    //private double totalAmount;
+    //private String date;
+    //private String time;
+    //private int luggageKg;
     
     public Interface() {
         initComponents();
@@ -196,8 +198,7 @@ public class Interface extends JPanel {
             // Datos base
             String name = nameField.getText().trim();
             String id = idField.getText().trim();
-            String origin = (String) originCombo.getSelectedItem();
-            String destination = (String) destinationCombo.getSelectedItem();
+            
             String travelClass = (String) classCombo.getSelectedItem();
             String selectedClass = travelClass.toLowerCase();
             String date = new SimpleDateFormat("yyyy-MM-dd").format(dateSpinner.getValue());
@@ -225,7 +226,7 @@ public class Interface extends JPanel {
             }
 
             // Validaciones de disponibilidad
-            if (plane == null) {
+            if (plane == null || flight == null){
                 JOptionPane.showMessageDialog(this, "Please check availability first", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -235,16 +236,17 @@ public class Interface extends JPanel {
             }
 
             // Creacion de objetos y metodos
-            passenger = new Passenger(name, id);
-            locations = new Flight(origin, destination);
-            plane = new Plane(travelClass);
-            Ticket ticket = new Ticket(passenger, locations, plane);
-            Invoice invoice = new Invoice(0, passenger, locations, plane);
+            Passenger passenger = new Passenger(name, id);
+            
+            Ticket ticket = new Ticket(passenger, flight, travelClass);
+            Invoice invoice = new Invoice(0, passenger, flight, plane);
             CalculateAmount.calcAmount(invoice, travelClass);
             
+            double luggageFee = calculateLuggageFee(luggageKg);
+
             // Mostrar informacion de ticket y Invoice
-            ticketArea.setText(ticket.showTicketInfo());
-            invoiceArea.setText(invoice.showInvoice());
+            ticketArea.setText(ticket.showTicketInfo()+ "\nDate: " + date+ "\nTime: " + time + "\nLuggage: " + luggageKg + " kg" + "\nLuggage Fee: $" + luggageFee);
+            invoiceArea.setText(invoice.showInvoice() + "\n\n--- Luggage Details ---" + "\nLuggage: " + luggageKg + " kg" + "\nLuggage Fee: $" + luggageFee);
             
             JOptionPane.showMessageDialog(this, "Reservation completed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         });
