@@ -9,19 +9,17 @@ package logic;
  * @author mayco
  */
 public class ValidateInformation {
-    
-public static boolean validateName(String name) {
-    if (name == null || name.trim().isEmpty()) {
-        return false;
+    public static boolean validateName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+        return name.matches("^[a-zA-ZÁÉÍÓÚáéíóúñÑ ]+$");
     }
-    return name.matches("^[a-zA-ZÁÉÍÓÚáéíóúñÑ ]+$");
-}
-    // Validar ID: solo números
-public static boolean validateID(String id) {
-    if (id == null || id.trim().isEmpty()) {
-        return false;
-    }
-    return id.matches("\\d+");
-}
     
+    public static boolean validateID(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            return false;
+        }
+        return id.matches("\\d+");
+    }
 }
