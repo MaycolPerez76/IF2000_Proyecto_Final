@@ -14,11 +14,11 @@ import java.util.Date;
 import logic.CalcAmountMethod;
 import logic.FlightMethods;
 import logic.PlaneMethods;
+import logic.SpinnerController;
 import logic.ValidateInformation;
 
-
 public class Interface extends JPanel {
-    
+
     private JComboBox<String> originCombo, destinationCombo, classCombo, timeCombo;
     private JTextField nameField, idField;
     private JTextArea ticketArea, invoiceArea, viewAvailableSeats;
@@ -31,34 +31,35 @@ public class Interface extends JPanel {
     private FlightMethods fligmeth;
     private ValidateInformation valInf;
     private CalcAmountMethod calA;
-
+    private SpinnerController spinController;
     
-public Interface() {
-    // Inicializar la capa lógica
-    this.fligmeth = new FlightMethods();
-    this.planemeth = new PlaneMethods();
-    this.calA = new CalcAmountMethod();
 
-    initComponents();
-}
+    public Interface() {
+        // Inicializar la capa lógica
+        this.fligmeth = new FlightMethods();
+        this.planemeth = new PlaneMethods();
+        this.calA = new CalcAmountMethod();
+        this.spinController = new SpinnerController();
 
+        initComponents();
+    }
+
+    //TODO el contenido dentro de un metodo
     private void initComponents() {
         setBackground(Color.WHITE);
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // Form panel (left) - GridLayout for alignment
         JPanel formPanel = new JPanel(new GridLayout(8, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createTitledBorder("Reservation Details"));
-        
+
         // Origin
         formPanel.add(new JLabel("Origin:"));
-        originCombo = new JComboBox<>(new String[]{"San Jose", "Liberia","Limon"});
+        originCombo = new JComboBox<>(new String[]{"San Jose", "Liberia", "Limon"});
         formPanel.add(originCombo);
 
         // Destination
         formPanel.add(new JLabel("Destination:"));
-        destinationCombo = new JComboBox<>(new String[]{"San Jose", "Liberia","Mexico","Nicaragua","Colombia"});
+        destinationCombo = new JComboBox<>(new String[]{"San Jose", "Liberia", "Mexico", "Nicaragua", "Colombia"});
         formPanel.add(destinationCombo);
 
         // Class
@@ -96,9 +97,9 @@ public Interface() {
         luggageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 30, 1));
         formPanel.add(luggageSpinner);
 
-        // Results panel (center)
+        // Results panel 
         JPanel resultsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
-        
+
         // Ticket
         JPanel ticketPanel = new JPanel(new BorderLayout());
         ticketPanel.setBorder(BorderFactory.createTitledBorder("Ticket"));
@@ -116,7 +117,7 @@ public Interface() {
         invoiceArea.setText("Invoice will appear here...");
         JScrollPane invoiceScroll = new JScrollPane(invoiceArea);
         invoicePanel.add(invoiceScroll, BorderLayout.CENTER);
-        
+
         // ViewAvailableSeats
         JPanel viewAvailableSeatsPanel = new JPanel(new BorderLayout());
         viewAvailableSeatsPanel.setBorder(BorderFactory.createTitledBorder("View Available Seats"));
@@ -130,9 +131,9 @@ public Interface() {
         resultsPanel.add(invoicePanel);
         resultsPanel.add(viewAvailableSeatsPanel);
 
-        // Button panel (south)
+        // Button panel 
         JPanel buttonPanel = new JPanel(new FlowLayout());
-        
+
         //___________________________________________FUNCTION_1________________________________________________________________________
         JButton checkButton = new JButton("Check Availability");
         checkButton.addActionListener((ActionEvent e) -> {
@@ -184,7 +185,7 @@ public Interface() {
             flight = new Flight(origin, destination, plane);
             boolean locationValidated = fligmeth.validateLocations(origin, destination);
             boolean isAvailable = planemeth.hasAvailability(plane, selectedClass);
-            
+
             //Funciones
             if (!locationValidated) {
                 JOptionPane.showMessageDialog(this, "Error, the origin and destination must to be different", "Error", JOptionPane.ERROR_MESSAGE);
@@ -203,34 +204,30 @@ public Interface() {
             // Datos base
             String name = nameField.getText().trim();
             String id = idField.getText().trim();
-                 
             String travelClass = (String) classCombo.getSelectedItem();
             String selectedClass = travelClass.toLowerCase();
             String date = new SimpleDateFormat("yyyy-MM-dd").format(dateSpinner.getValue());
             String time = (String) timeCombo.getSelectedItem();
             int luggageKg = (int) luggageSpinner.getValue();
 
-if (!ValidateInformation.validateName(name)) {
-        JOptionPane.showMessageDialog(this, 
-            "Please enter your full name or validate that name only contains letters and spaces", 
-            "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    if (!ValidateInformation.validateID(id)) {
-        JOptionPane.showMessageDialog(this, 
-            "Please enter your ID or validate that ID only contains numbers", 
-            "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    if (plane == null || flight == null) {
-        JOptionPane.showMessageDialog(this, 
-            "Please check availability first", 
-            "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
+            if (!ValidateInformation.validateName(name)) {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter your full name or validate that name only contains letters and spaces",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!ValidateInformation.validateID(id)) {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter your ID or validate that ID only contains numbers",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (plane == null || flight == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Please check availability first",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             if (!planemeth.hasAvailability(plane, selectedClass)) {
                 JOptionPane.showMessageDialog(this, "The " + travelClass + " class is not available", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -238,17 +235,14 @@ if (!ValidateInformation.validateName(name)) {
 
             // Creacion de objetos y metodos
             Passenger passenger = new Passenger(name, id);
-            
             Ticket ticket = new Ticket(passenger, flight, travelClass);
             Invoice invoice = new Invoice(0, passenger, flight, plane);
             calA.calcAmount(invoice, travelClass);
-            
-            double luggageFee = calculateLuggageFee(luggageKg);
+        double luggageFee = spinController.calculateLuggageFee(luggageKg);
 
             // Mostrar informacion de ticket y Invoice
-            ticketArea.setText(ticket.showTicketInfo()+ "\nDate: " + date+ "\nTime: " + time + "\nLuggage: " + luggageKg + " kg" + "\nLuggage Fee: $" + luggageFee);
+            ticketArea.setText(ticket.showTicketInfo() + "\nDate: " + date + "\nTime: " + time + "\nLuggage: " + luggageKg + " kg" + "\nLuggage Fee: $" + luggageFee);
             invoiceArea.setText(invoice.showInvoice() + "\n\n--- Luggage Details ---" + "\nLuggage: " + luggageKg + " kg" + "\nLuggage Fee: $" + luggageFee);
-            
             JOptionPane.showMessageDialog(this, "Reservation completed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         });
 
@@ -266,78 +260,36 @@ if (!ValidateInformation.validateName(name)) {
                 viewAvailableSeats.setText("Please check availability first.");
                 return;
             }
+            //Asientos disponibles, ocupados y totales
             if (selectedClass.equals("business")) {
                 totalSeats = plane.getBusinessCapacity();
                 occupiedSeats = plane.getBusinessOccupied();
-                availableSeats = totalSeats - occupiedSeats; 
+                availableSeats = totalSeats - occupiedSeats;
             } else if (selectedClass.equals("economy")) {
                 totalSeats = plane.getEconomyCapacity();
                 occupiedSeats = plane.getEconomyOccupied();
                 availableSeats = totalSeats - occupiedSeats;
             }
             viewAvailableSeats.setText(
-                    "CLASS: " + selectedClass.toUpperCase() +
-                    "\nTotal seats: " + totalSeats +
-                    "\nOccupied seats: " + occupiedSeats +
-                    "\nAvailable seats: " + availableSeats
+                    "CLASS: " + selectedClass.toUpperCase()
+                    + "\nTotal seats: " + totalSeats
+                    + "\nOccupied seats: " + occupiedSeats
+                    + "\nAvailable seats: " + availableSeats
             );
         });
-        
+
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> System.exit(0));
         buttonPanel.add(checkButton);
         buttonPanel.add(generateButton);
         buttonPanel.add(seatsButton);
         buttonPanel.add(exitButton);
-        
-        // Add all panels
         add(formPanel, BorderLayout.NORTH);
         add(resultsPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-
-        initializeDateSpinner();
+        spinController.initializeDateSpinner(dateSpinner, timeCombo);
     }
 
-    private void initializeDateSpinner() {
-        Calendar calendar = Calendar.getInstance();
-        Date today = calendar.getTime();
-        
-        calendar.add(Calendar.DAY_OF_YEAR, 30);
-        Date maxDate = calendar.getTime();
-        
-        SpinnerDateModel dateModel = new SpinnerDateModel(today, today, maxDate, Calendar.DAY_OF_YEAR);
-        dateSpinner.setModel(dateModel);
-        
-        dateSpinner.addChangeListener(e -> {
-            loadTimeSlots((Date) dateSpinner.getValue());
-        });
-        
-        loadTimeSlots(today);
-    }
-
-    private void loadTimeSlots(Date selectedDate) {
-        if (timeCombo != null) {
-            timeCombo.removeAllItems();
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(selectedDate);
-            int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-            
-            if (dayOfWeek == Calendar.SUNDAY) {
-                for (int hour = 5; hour <= 21; hour += 2) {
-                    timeCombo.addItem(String.format("%02d:00", hour));
-                }
-                timeCombo.addItem("23:00");
-            } else {
-                for (int hour = 5; hour <= 21; hour++) {
-                    timeCombo.addItem(String.format("%02d:00", hour));
-                }
-            }
-        }
-    }
-
-    private double calculateLuggageFee(int luggageKg) {
-        double freeAllowance = 15.0;
-        if (luggageKg <= freeAllowance) return 0.0;
-        return (luggageKg - freeAllowance) * 2.0;
-    }
+    //-------------------------Fecha-----------------------------//
+    
 }
