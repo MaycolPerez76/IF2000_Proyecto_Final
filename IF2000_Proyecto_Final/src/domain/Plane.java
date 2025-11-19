@@ -29,35 +29,6 @@ public class Plane {
     
     
     
-    // Checks availability based on class
-public boolean hasAvailability(String seatClass) {
-    if (seatClass.equalsIgnoreCase("business")) {
-        return businessOccupied < businessCapacity;
-    } else if (seatClass.equalsIgnoreCase("economy")) {
-        return economyOccupied < economyCapacity;
-    } else {
-        return false;
-    }
-}
-
-    // Reserves a seat based on class
-    public boolean reserveSeat(String seatClass) {
-        if (!hasAvailability(seatClass)) return false;
-        if (seatClass.equalsIgnoreCase("business")) {
-            businessOccupied++;
-        } else if (seatClass.equalsIgnoreCase("economy")) {
-            economyOccupied++;
-        }
-        return true;
-    }
-
-    public boolean checkAvailability(String clase){
-    return hasAvailability(clase);
-    }
-    public boolean occupySeat(String clase){
-    return reserveSeat(clase);
-    }
-    
     // Getters
     public String getModel() {
         return model;

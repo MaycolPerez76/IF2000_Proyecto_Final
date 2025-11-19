@@ -6,7 +6,7 @@ public class Flight {
     private Plane plane;
     private String code;
     private String departure;
-
+ 
     public Flight(String origin, String destination) {
         this.origin = origin;
         this.destination = destination;
@@ -23,23 +23,7 @@ public class Flight {
         this.departure = departure;
     }
 
-    public boolean validateLocations(String origin, String destination) {
-        if (origin.equals(destination)) {
-            return false;
-        }
-        return true;
-    }
-
-
-    public boolean checkAvailability(String seatClass) {
-        return plane.hasAvailability(seatClass);
-    }
-    public boolean reserveSeat(String seatClass) {
-        return plane.reserveSeat(seatClass);
-    }
-    public boolean occupySeat(String clase) {
-        return reserveSeat(clase);
-    }
+    
 
     // Getters
     public String getOrigin() { 

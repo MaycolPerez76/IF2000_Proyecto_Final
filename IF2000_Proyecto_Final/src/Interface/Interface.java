@@ -11,8 +11,11 @@ import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import logic.CalculateAmount;
-//import logic.ValidateInformation;
+import logic.CalcAmountMethod;
+import logic.FlightMethods;
+import logic.PlaneMethods;
+import logic.ValidateInformation;
+
 
 public class Interface extends JPanel {
     
@@ -24,18 +27,20 @@ public class Interface extends JPanel {
     private Plane plane;
     private Flight flight;
     private Passenger passenger;
-    //private Ticket ticket;
-    //private Invoice total;
-    //private Ticket ticketInfo;
-    //private Invoice amount;
-    //private double totalAmount;
-    //private String date;
-    //private String time;
-    //private int luggageKg;
+    private PlaneMethods planemeth;
+    private FlightMethods fligmeth;
+    private ValidateInformation valInf;
+    private CalcAmountMethod calA;
+
     
-    public Interface() {
-        initComponents();
-    }
+public Interface() {
+    // Inicializar la capa lógica
+    this.fligmeth = new FlightMethods();
+    this.planemeth = new PlaneMethods();
+    this.calA = new CalcAmountMethod();
+
+    initComponents();
+}
 
     private void initComponents() {
         setBackground(Color.WHITE);
@@ -177,9 +182,9 @@ public class Interface extends JPanel {
             //Implementacion de las clases y metodos
             plane = new Plane("Boeing 737", businessCap, economyCap, businessOccup, economyOccup);
             flight = new Flight(origin, destination, plane);
-            boolean locationValidated = flight.validateLocations(origin, destination);
-            boolean isAvailable = plane.hasAvailability(selectedClass);
-
+            boolean locationValidated = fligmeth.validateLocations(origin, destination);
+            boolean isAvailable = planemeth.hasAvailability(plane, selectedClass);
+            
             //Funciones
             if (!locationValidated) {
                 JOptionPane.showMessageDialog(this, "Error, the origin and destination must to be different", "Error", JOptionPane.ERROR_MESSAGE);
@@ -198,39 +203,35 @@ public class Interface extends JPanel {
             // Datos base
             String name = nameField.getText().trim();
             String id = idField.getText().trim();
-            
+                 
             String travelClass = (String) classCombo.getSelectedItem();
             String selectedClass = travelClass.toLowerCase();
             String date = new SimpleDateFormat("yyyy-MM-dd").format(dateSpinner.getValue());
             String time = (String) timeCombo.getSelectedItem();
             int luggageKg = (int) luggageSpinner.getValue();
 
-            // Validaciones de nombre (solo letras)
-            if (name.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter your full name", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (!name.matches("[a-zA-Z ]+")) {
-                JOptionPane.showMessageDialog(this, "Name can only contain letters and spaces", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Validaciones de ID (solo números)
-            if (id.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter your ID", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (!id.matches("\\d+")) {
-                JOptionPane.showMessageDialog(this, "ID can only contain numbers", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Validaciones de disponibilidad
-            if (plane == null || flight == null){
-                JOptionPane.showMessageDialog(this, "Please check availability first", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (!plane.hasAvailability(selectedClass)) {
+if (!ValidateInformation.validateName(name)) {
+        JOptionPane.showMessageDialog(this, 
+            "Please enter your full name or validate that name only contains letters and spaces", 
+            "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    if (!ValidateInformation.validateID(id)) {
+        JOptionPane.showMessageDialog(this, 
+            "Please enter your ID or validate that ID only contains numbers", 
+            "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    if (plane == null || flight == null) {
+        JOptionPane.showMessageDialog(this, 
+            "Please check availability first", 
+            "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+            if (!planemeth.hasAvailability(plane, selectedClass)) {
                 JOptionPane.showMessageDialog(this, "The " + travelClass + " class is not available", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -240,7 +241,7 @@ public class Interface extends JPanel {
             
             Ticket ticket = new Ticket(passenger, flight, travelClass);
             Invoice invoice = new Invoice(0, passenger, flight, plane);
-            CalculateAmount.calcAmount(invoice, travelClass);
+            calA.calcAmount(invoice, travelClass);
             
             double luggageFee = calculateLuggageFee(luggageKg);
 
