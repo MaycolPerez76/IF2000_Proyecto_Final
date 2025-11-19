@@ -24,6 +24,7 @@ public class FlightMethods {
     
     public boolean checkAvailability(Flight flight, String seatClass) {
         PlaneMethods pm = new PlaneMethods();
+        //Toda la informacion y datos del avion escogido
         Plane plane = flight.getPlane();
         return pm.hasAvailability(plane, seatClass);
     }
@@ -31,6 +32,7 @@ public class FlightMethods {
     public boolean reserveSeat(Flight flight, String seatClass) {
         PlaneMethods pm = new PlaneMethods();
         Plane plane = flight.getPlane();
+        //LLama al metodo de reserveSeat en PlaneMethods
         return pm.reserveSeat(plane, seatClass);
     }
     
