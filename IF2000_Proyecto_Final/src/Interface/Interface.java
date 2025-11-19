@@ -9,8 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import logic.CalcAmountMethod;
 import logic.FlightMethods;
 import logic.PlaneMethods;
@@ -32,15 +30,13 @@ public class Interface extends JPanel {
     private ValidateInformation valInf;
     private CalcAmountMethod calA;
     private SpinnerController spinController;
-    
 
     public Interface() {
-        // Inicializar la capa lógica
+        // Inicializar la parte logica (Para que no quede en null)
         this.fligmeth = new FlightMethods();
         this.planemeth = new PlaneMethods();
         this.calA = new CalcAmountMethod();
         this.spinController = new SpinnerController();
-
         initComponents();
     }
 
@@ -238,7 +234,7 @@ public class Interface extends JPanel {
             Ticket ticket = new Ticket(passenger, flight, travelClass);
             Invoice invoice = new Invoice(0, passenger, flight, plane);
             calA.calcAmount(invoice, travelClass);
-        double luggageFee = spinController.calculateLuggageFee(luggageKg);
+            double luggageFee = spinController.calculateLuggageFee(luggageKg);
 
             // Mostrar informacion de ticket y Invoice
             ticketArea.setText(ticket.showTicketInfo() + "\nDate: " + date + "\nTime: " + time + "\nLuggage: " + luggageKg + " kg" + "\nLuggage Fee: $" + luggageFee);
@@ -289,7 +285,4 @@ public class Interface extends JPanel {
         add(buttonPanel, BorderLayout.SOUTH);
         spinController.initializeDateSpinner(dateSpinner, timeCombo);
     }
-
-    //-------------------------Fecha-----------------------------//
-    
 }
