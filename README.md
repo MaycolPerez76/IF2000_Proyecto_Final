@@ -1,4 +1,4 @@
-IF2000\_Proyecto\_Final
+7AIF2000\_Proyecto\_Final
 Sistema de Reservación de Vuelos
 ---
 
@@ -82,6 +82,7 @@ Está desarrollado en Java con NetBeans e incluye una interfaz gráfica construi
 
 \- \*\*ValidateInformation.java\*\* – Validación de nombre, ID y datos ingresados.
 
+\- \*\*SpinnerController.java\*\* – Validacion de la fecha y el peso del paquete ingresados.
 
 
 ---
